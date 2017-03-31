@@ -8,6 +8,10 @@ import java.io.File;
  */
 public class App {
     public static void main( String[] args ) {
-        System.out.println( new File("").getAbsolutePath() );
+        String test = "world-building'";
+        System.out.println(test);
+        
+        String next = test.replaceAll("(?<=\\w)'(?!\\w)", " doop ");
+        System.out.println(next);
     }
 }

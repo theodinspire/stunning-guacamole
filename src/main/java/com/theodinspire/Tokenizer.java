@@ -17,6 +17,7 @@ public class Tokenizer {
     private List<String> tokens;
     private Map<String, Integer> distribution;
     
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         
@@ -66,35 +67,64 @@ public class Tokenizer {
         if (content == null) return new LinkedList<>();
         
         //  Clitics
-        content = content.replace("n't", " n't");
-        content = content.replace("'ll", " will");
-        content = content.replace("'ve", " have");
-        content = content.replace("'d", " would");
-        content = content.replace("'re", " are");
-        content = content.replaceAll("(?<=([Ss]?[Hh]e|[Ii]t)|[TtWw]?[Hh]ere)'s", " is");
-        content = content.replaceAll("\\s*'s", " 's");
-        content = content.replace("I'm", "I am");
+        //content = content.replaceAll("(?<![\\w-])won't(?![\\w-])", "will not");
+        //content = content.replaceAll("(?<![\\w-])can't(?![\\w-])", "cannot");
+        content = content.replaceAll("n't(?![\\w-])", " not");
+        content = content.replaceAll("'ll(?![\\w-])", " will");
+        content = content.replaceAll("'ve(?![\\w-])", " have");
+        content = content.replaceAll("'d(?![\\w-])", " would");
+        content = content.replaceAll("'re(?![\\w-])", " are");
+        //content = content.replaceAll("(?<=([Ss]?[Hh]e|[Ii]t)|[TtWw]?[Hh]ere)'s(?![\w-])", " is");
+        content = content.replaceAll("(?<=([Ss]?[Hh]e|[Ii]t))'s(?![\\w-])", " is");
+        content = content.replaceAll("(?<=\\w)'s(?![\\w-])", " 's");
+        content = content.replaceAll("I'm(?![\\w-])", "I am");
         
         //  Punctuation
-        // Brackets
-        content = content.replaceAll("\\s*\"\\s*", " \" ");
-        content = content.replaceAll("\\s*(?<!n)'(?!s\\W)\\s*", " ' ");
-        content = content.replaceAll("\\s*\\(\\s*", " ( ");
-        content = content.replaceAll("\\s*\\)\\s*", " ) ");
-        // Trailing
-        content = content.replaceAll("\\.(?!\\w)", " .");
-        content = content.replaceAll(",(?!\\w)", " ,");
-        content = content.replaceAll(";", " ;");
-        content = content.replaceAll(":", " :");
-        content = content.replaceAll("!", " !");
-        content = content.replaceAll("\\?", " ?");
-        // Leading
-        content = content.replaceAll("\\s*\\$\\s*", " $ ");
+        // Quotes
+        content = content.replace("\"", " \" ");
+        // Preceding tick
+        content = content.replaceAll("(?<!\\w)'(?![\\W(s\\s)])", " ' ");
+        // Following tick
+        content = content.replaceAll("(?<=\\w)'(?!\\w)", " ' ");
+        // Parentheses
+        content = content.replace("(", " ( ");
+        content = content.replace(")", " ) ");
+        // Curly braces
+        content = content.replace("{", " { ");
+        content = content.replace("}", " } ");
+        // Square braces
+        content = content.replace("[", " [ ");
+        content = content.replace("]", " ] ");
+        
+        // Trailing full stop
+        content = content.replaceAll("\\.(?!\\w)", " . ");
+        // Leading full stop
+        content = content.replaceAll("(?<!\\w)\\.", " . ");
+        // Comma
+        content = content.replaceAll(",(?!\\d)", " , ");
+        // Semicolon
+        content = content.replace(";", " ; ");
+        // Colon
+        content = content.replace(":", " : ");
+        // Bang
+        content = content.replace("!", " ! ");
+        // Query
+        content = content.replace("?", " ? ");
+        // Dollar sign
+        content = content.replaceAll("\\s*\\$(?=\\d)", " \\$ ");
+        // That fake em-dash
+        content = content.replace("--", " -- ");
+        // Slash
+        content = content.replaceAll("(?<!\\bw)/", " / ");
+        // Star
+        content = content.replace("*", " * ");
+        // Tilde
+        content = content.replace("~", " ~ ");
         
         //  Test
         //System.out.println(content);
         
-        return Arrays.asList(content.split("\\s+"));
+        return Arrays.asList(content.split("[\\s ]+"));
     }
     
     private static int countParagraphs(String content) {
@@ -165,7 +195,7 @@ public class Tokenizer {
         Tokenizer tokenizer = Tokenizer.fromFile(inputFilename);
         String output = tokenizer.toString();
         
-        //System.out.println(output);
+        System.out.println(output);
         
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilename))) {
             writer.write(output);

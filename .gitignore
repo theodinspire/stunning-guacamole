@@ -11,3 +11,6 @@ buildNumber.properties
 # IntelliJ
 .idea/
 stunning-guacamole.iml
+
+# User defined
+*.txt
